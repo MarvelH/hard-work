@@ -1,0 +1,35 @@
+--sql1：新表激活逻辑
+
+    select
+            s_date     date   ,
+            client        ,
+            client_version,
+            subunion_id   ,
+            count(distinct(uuid)) as acount
+    from
+            (
+                    select
+                            to_date(created) s_date   ,
+                            trim(lower(client)) client,
+                            client_version            ,
+                            subunion_id               ,
+                            case when lower(client) = 'android'  then uuid when lower(client) in('apple', 'ipad') then openudid end uuid
+                    from
+                            fdm.fdm_cpasystem_app_cpadevice_1_chain --一次过滤激活表
+                    where
+                            dp                    = 'ACTIVE'
+                            and to_date(created) >= '2016-03-01'
+                            and to_date(created) <= '2016-03-02'
+                    group by
+                            to_date(created)    ,
+                            trim(lower(client)) ,
+                            client_version            ,
+                            subunion_id               ,
+                            case when lower(client) = 'android'  then uuid when lower(client) in('apple', 'ipad') then openudid end
+            )
+            m
+    group by
+            s_date        ,
+            client        ,
+            client_version,
+            subunion_id
