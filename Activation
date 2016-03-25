@@ -1,4 +1,4 @@
---sql1：新表激活逻辑
+--sql1：新表激活逻辑（2）
 
     select
             s_date     date   ,
